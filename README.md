@@ -23,7 +23,7 @@ _v0.0.1_
 Скопируйте проект на компьютер:
 
 ```
-git clone https://github.com/Manhetn/backend_mesto.git
+git clone https://github.com/Manhetn/backend-mesto.git
 ```
 
 Установите зависимости:
