@@ -29,7 +29,7 @@ git clone https://github.com/Manhetn/backend-mesto.git
 Установите зависимости:
 
 ```
-npm install
+npm init
 ```
 
 ## Для локальной разработки с поднятием сервера используйте:
