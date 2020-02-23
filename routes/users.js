@@ -1,4 +1,5 @@
 const router = require("express").Router(); // создали роутер
+
 const users = require("../data/users.json");
 
 router.get("/", (req, res) => {
@@ -15,4 +16,5 @@ router.get("/:id", (req, res) => {
   }
   return res.json(user);
 });
+
 module.exports = router;
