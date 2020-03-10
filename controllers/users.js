@@ -1,5 +1,5 @@
 const User = require("../models/user");
-
+// возвращает всех пользователей
 const readUsers = (req, res) => {
   User.find(req.params.id)
     .then(user => res.status(200).send({ data: user }))
@@ -10,9 +10,8 @@ const readUsers = (req, res) => {
       })
     );
 };
-
+// возвращает пользователя по _id
 const readUser = (req, res) => {
-  console.log(req.params.id);
   User.findById(req.params.id)
     .then(user => res.send(user))
     .catch(err =>
@@ -22,12 +21,13 @@ const readUser = (req, res) => {
       })
     );
 };
-
+// создаёт пользователя
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-
+  console.log(req.user._id);
+  console.log(req.params);
   User.create({ name, about, avatar })
-    .then(user => res.status(200).send({ data: user }))
+    .then(user => res.status(201).send({ data: user }))
     .catch(err =>
       res.status(500).send({
         message: "Ошибка создания пользователя",
@@ -35,9 +35,10 @@ const createUser = (req, res) => {
       })
     );
 };
-
+// обновляет профиль
 const updateUserInfo = (req, res) => {
   const { name, about } = req.body;
+
   User.findByIdAndUpdate(
     req.params.id,
     { name, about },
@@ -47,7 +48,6 @@ const updateUserInfo = (req, res) => {
     }
   )
     .then(user => res.send({ data: user }))
-    // .then(user => res.send({ data: user }))
     .catch(err =>
       res.status(500).send({
         message: "Ошибка обновления информации пользователя",
@@ -55,11 +55,10 @@ const updateUserInfo = (req, res) => {
       })
     );
 };
-
+// обновляет аватар
 const updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
-  console.log(req.body);
-  console.log(req.params.id);
+
   User.findByIdAndUpdate(
     req.params.id,
     { avatar },
@@ -69,7 +68,6 @@ const updateUserAvatar = (req, res) => {
     }
   )
     .then(user => res.send({ data: user }))
-    // .then(user => res.send({ data: user }))
     .catch(err =>
       res.status(500).send({
         message: "Ошибка обновления ававтара пользователя",
