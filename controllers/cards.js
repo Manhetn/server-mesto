@@ -13,8 +13,6 @@ const readCards = (req, res) => {
 // создаёт карточку
 const createCard = (req, res) => {
   const { name, link } = req.body;
-  console.log(req.user._id);
-  console.log(req.params);
   Card.create({ name, link, owner: req.user._id })
     .then(card => res.status(201).send({ data: card }))
     .catch(err =>
@@ -36,11 +34,39 @@ const deleteCard = (req, res) => {
     );
 };
 // поставить лайк карточке
-
-// убрать лайк с карточки
+const addLikeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.id,
+    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { new: true }
+  )
+    .then(card => res.send(card))
+    .catch(err =>
+      res.status(500).send({
+        message: "Ошибка постановки like карточик",
+        error: err
+      })
+    );
+};
+const deleteLikeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.id,
+    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { new: true }
+  )
+    .then(card => res.send(card))
+    .catch(err =>
+      res.status(500).send({
+        message: "Ошибка в удалении like карточки",
+        error: err
+      })
+    );
+};
 
 module.exports = {
   createCard,
   readCards,
-  deleteCard
+  deleteCard,
+  addLikeCard,
+  deleteLikeCard
 };
