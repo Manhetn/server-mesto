@@ -5,6 +5,7 @@ _v0.0.1_
 ## Инструменты: 
 - Node.js, 
 - express.js
+- REST API
 - mongoose
 
 **_Описание:_** создан сервер для проекта "Mesto"
