@@ -1,4 +1,8 @@
+const mongoose = require("mongoose");
+
 const User = require("../models/user");
+
+const { ObjectId } = mongoose.Types;
 // возвращает всех пользователей
 const readUsers = (req, res) => {
   User.find(req.params.id)
@@ -12,11 +16,21 @@ const readUsers = (req, res) => {
 };
 // возвращает пользователя по _id
 const readUser = (req, res) => {
+  if (!ObjectId.isValid(req.params.id)) {
+    res.status(400).send({ message: "Невалидный id" });
+    return;
+  }
   User.findById(req.params.id)
-    .then(user => res.send(user))
+    .then(user => {
+      if (user) {
+        res.status(200).send(user);
+      } else {
+        res.status(404).send({ message: "Пользователь не существует" });
+      }
+    })
     .catch(err =>
       res.status(500).send({
-        message: "Пользователь не найден",
+        message: "Ощибка на сервере",
         error: err
       })
     );
