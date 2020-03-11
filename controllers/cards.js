@@ -1,4 +1,9 @@
+const mongoose = require("mongoose");
+
 const Card = require("../models/card");
+
+const { ObjectId } = mongoose.Types;
+
 // возвращает все карточки
 const readCards = (req, res) => {
   Card.find(req.params)
@@ -24,14 +29,27 @@ const createCard = (req, res) => {
 };
 // удаляет карточку по идентификатору
 const deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
-    .then(card => res.send({ data: card }))
-    .catch(err =>
-      res.status(500).send({
-        message: "Ошибка удаления карточик",
-        error: err
-      })
-    );
+  if (!ObjectId.isValid(req.params.id)) {
+    res.status(400).send({ message: "Невалидный id" });
+    return;
+  }
+  Card.findById(req.params.id).then(card => {
+    if (!card) {
+      res.status(404).send({ message: "Такой карточки не существует" });
+    } else if (req.user._id.toString !== card.owner) {
+      res
+        .status(403)
+        .send({ message: "Нельзя удалить карточку другого пользователя" });
+    } else {
+      Card.findByIdAndRemove(req.params.id)
+        .then(() => res.send({ data: card }))
+        .catch(() =>
+          res
+            .status(500)
+            .send({ message: "Карточка не удалена, ошибка на сервере" })
+        );
+    }
+  });
 };
 // поставить лайк карточке
 const addLikeCard = (req, res) => {
