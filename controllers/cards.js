@@ -20,12 +20,13 @@ const createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then(card => res.status(201).send({ data: card }))
-    .catch(err =>
-      res.status(500).send({
-        message: "Ошибка создания карточик",
-        error: err
-      })
-    );
+    .catch(err => {
+      if (err.name === "ValidationError") {
+        res.status(400).send({ message: "Данные невалидны", error: err });
+      } else {
+        res.status(500).send({ message: "Ошибка на сервере", error: err });
+      }
+    });
 };
 // удаляет карточку по идентификатору
 const deleteCard = (req, res) => {
@@ -37,13 +38,13 @@ const deleteCard = (req, res) => {
     .then(card => {
       if (!card) {
         res.status(404).send({ message: "Такой карточки не существует" });
-      } else if (req.user._id.toString !== card.owner) {
+      } else if (req.user._id !== card.owner.toString()) {
         res
           .status(403)
           .send({ message: "Нельзя удалить карточку другого пользователя" });
       } else {
         Card.findByIdAndRemove(req.params.id)
-          .then(() => res.send({ data: card }))
+          .then(() => res.send({ message: "Карточка удалена" }))
           .catch(() =>
             res
               .status(500)
