@@ -7,6 +7,28 @@ const jwt = require("jsonwebtoken"); // импортируем модуль json
 const User = require("../models/user");
 
 const { ObjectId } = mongoose.Types;
+
+// login
+const login = (req, res) => {
+  const { email, password } = req.body;
+  User.findUserByCredentials(email, password)
+    .then(user => {
+      const { NODE_ENV, JWT_SECRET } = process.env;
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === "production" ? JWT_SECRET : "secret-key",
+        { expiresIn: "7d" }
+      );
+      res.cookie("token", token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true
+      });
+      res.status(200).send({ message: "Вы успешно авторизировались!" });
+    })
+    .catch(err => {
+      res.status(401).send({ message: err.message });
+    });
+};
 // создаёт пользователя
 const createUser = (req, res) => {
   const { name, about, avatar, email, password } = req.body;
@@ -22,28 +44,6 @@ const createUser = (req, res) => {
       } else {
         res.status(500).send({ message: "Ошибка на сервере", error: err });
       }
-    });
-};
-// login
-const login = (req, res) => {
-  const { email, password } = req.body;
-  User.findUserByCredentials(email, password)
-    .then(user => {
-      const { NODE_ENV, JWT_SECRET } = process.env;
-      const token = jwt.sign(
-        { _id: user._id },
-        NODE_ENV === "production" ? JWT_SECRET : "secret-key",
-        { expiresIn: "7d" }
-      );
-      res.cookie("token", token, {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-        sameSite: true
-      });
-      res.status(200).send({ message: "Вы успешно авторизировались!" });
-    })
-    .catch(err => {
-      res.status(401).send({ message: err.message });
     });
 };
 // возвращает всех пользователей
