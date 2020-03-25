@@ -1,16 +1,21 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30
+    required: [true, "Это обязательное поле"],
+    minlength: [2, "Должно быть не менее 2 символов"],
+    maxlength: [30, "Должно быть не более 30 символов"]
   },
   link: {
     type: String,
-    required: true,
-    match: /https?:\/\/\S+(?:\.[a-zA-Z]{2,8})\/\S+/
+    required: [true, "Это обязательное поле"],
+    validate: {
+      validator: link => validator.isURL(link),
+      message:
+        "Ссылка на картинку должна быть в формате: https://sun9-24.userapi.com/c630831/v630831668/33726/KNQZxpXt3jk.jpg"
+    }
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,

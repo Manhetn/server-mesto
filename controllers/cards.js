@@ -22,7 +22,7 @@ const createCard = (req, res) => {
     .then(card => res.status(201).send({ data: card }))
     .catch(err => {
       if (err.name === "ValidationError") {
-        res.status(400).send({ message: "Данные невалидны", error: err });
+        res.status(400).send({ message: `Данные невалидны: ${err}` });
       } else {
         res.status(500).send({ message: "Ошибка на сервере", error: err });
       }

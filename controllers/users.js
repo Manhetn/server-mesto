@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken"); // импортируем модуль jsonwebtoken
-// const escape = require("escape-html"); // method is out of date
-// const validator = require("validator");
+const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 
