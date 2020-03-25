@@ -1,6 +1,8 @@
 const router = require("express").Router(); // создали роутер
+const auth = require("../middlewares/auth.js");
 
 const {
+  login,
   readUsers,
   readUser,
   createUser,
@@ -8,9 +10,10 @@ const {
   updateUserAvatar
 } = require("../controllers/users");
 
+router.post("/signin", login);
+router.post("/signup", createUser);
 router.get("/users", readUsers);
 router.get("/users/:id", readUser);
-router.post("/users", createUser);
 router.patch("/users/:id", updateUserInfo);
 router.patch("/users/:id/avatar", updateUserAvatar);
 
