@@ -33,7 +33,16 @@ const createUser = (req, res) => {
   User.validate({ name, about, avatar, email, password })
     .then(() => bcrypt.hash(password, 10))
     .then(hash => User.create({ name, about, avatar, email, password: hash }))
-    .then(user => res.status(201).send(user))
+    .then(user =>
+      res.status(201).send({
+        user: {
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email
+        }
+      })
+    )
     .catch(err => {
       if (err.name === "ValidationError") {
         res.status(400).send({ message: `Данные невалидны. ${err}` });
