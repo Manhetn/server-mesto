@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const auth = (req, res, next) => {
   const { token } = req.cookies;
   if (!token) {
-    return res.status(401).send({ massage: "Необходима авторизация" });
+    return res.status(401).send({ message: "Необходима авторизация" });
   }
   let payload;
   try {
@@ -13,7 +13,7 @@ const auth = (req, res, next) => {
       NODE_ENV === "production" ? JWT_SECRET : "secret-key"
     );
   } catch (error) {
-    return res.status(401).send({ massage: "С токеном что-то не так" });
+    return res.status(401).send({ message: "С токеном что-то не так" });
   }
   req.user = payload;
   return next();
