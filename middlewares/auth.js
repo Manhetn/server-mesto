@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+const { verifyToken } = require("../middlewares/token");
 
 const auth = (req, res, next) => {
   const { token } = req.cookies;
@@ -7,11 +7,7 @@ const auth = (req, res, next) => {
   }
   let payload;
   try {
-    const { NODE_ENV, JWT_SECRET } = process.env;
-    payload = jwt.verify(
-      token,
-      NODE_ENV === "production" ? JWT_SECRET : "secret-key"
-    );
+    payload = verifyToken(token);
   } catch (error) {
     return res.status(401).send({ message: "С токеном что-то не так" });
   }
