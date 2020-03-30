@@ -3,9 +3,10 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 
-const users = require("./routes/users.js");
-const cards = require("./routes/cards.js");
-const errors = require("./routes/errors.js");
+const users = require("./routes/users");
+const cards = require("./routes/cards");
+const errors = require("./routes/errors");
+const errorHandler = require("./middlewares/errorHandler");
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -21,6 +22,8 @@ app.use(cookieParser());
 
 app.use(users);
 app.use(cards);
+app.use(errorHandler);
+
 app.use(errors);
 
 app.listen(PORT, () => {

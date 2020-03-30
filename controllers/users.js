@@ -2,12 +2,17 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const User = require("../models/user");
+const BadRequestError = require("../errors/badRequestError"); // 400
+const ConflictError = require("../errors/conflictError"); // 409
+const NotFoundError = require("../errors/notFoundError"); // 404
+const UnauthorizedError = require("../errors/unauthorizedError"); // 401
+
 const { createToken } = require("../middlewares/token");
 
 const { ObjectId } = mongoose.Types;
 
 // login
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then(user => {
@@ -19,11 +24,11 @@ const login = (req, res) => {
       res.status(200).send({ message: "Вы успешно авторизировались!" });
     })
     .catch(err => {
-      res.status(401).send({ message: err.message });
+      next(new UnauthorizedError(`${err.message}`));
     });
 };
 // создаёт пользователя
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, about, avatar, email, password } = req.body;
   User.validate({ name, about, avatar, email, password })
     .then(() => bcrypt.hash(password, 10))
@@ -40,52 +45,40 @@ const createUser = (req, res) => {
     )
     .catch(err => {
       if (err.name === "ValidationError") {
-        res.status(400).send({ message: `Данные невалидны. ${err}` });
+        next(new BadRequestError(`${err}`));
       } else if (email) {
-        res.status(500).send({ message: "Email уже занят" });
+        next(new ConflictError("Email уже занят"));
       } else {
-        res.status(500).send({ message: "Ошибка на сервере", error: err });
+        next(err);
       }
     });
 };
 // возвращает всех пользователей
-const readUsers = (req, res) => {
+const readUsers = (req, res, next) => {
   User.find(req.params.id)
     .then(user => res.status(200).send({ data: user }))
-    .catch(err =>
-      res.status(500).send({
-        message: "Что-то пошло не так :(",
-        error: err
-      })
-    );
+    .catch(err => next(err));
 };
 // возвращает пользователя по _id
-const readUser = (req, res) => {
+const readUser = (req, res, next) => {
   if (!ObjectId.isValid(req.params.id)) {
-    res.status(400).send({ message: "Невалидный id" });
-    return;
+    next(new BadRequestError("Невалидный id"));
   }
   User.findById(req.params.id)
     .then(user => {
       if (user) {
         res.status(200).send(user);
       } else {
-        res.status(404).send({ message: "Пользователь не существует" });
+        next(new NotFoundError("Пользователь не существует"));
       }
     })
-    .catch(err =>
-      res.status(500).send({
-        message: "Ощибка на сервере",
-        error: err
-      })
-    );
+    .catch(err => next(err));
 };
 // обновляет профиль
-const updateUserInfo = (req, res) => {
+const updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
   if (!ObjectId.isValid(req.params.id)) {
-    res.status(400).send({ message: "Невалидный id" });
-    return;
+    next(new BadRequestError("Невалидный id"));
   }
   User.findByIdAndUpdate(
     req.params.id,
@@ -99,25 +92,24 @@ const updateUserInfo = (req, res) => {
       if (req.user._id === req.params.id) {
         res.status(200).send({ data: user });
       } else {
-        res.status(404).send({
-          message: "Недостаточно прав для изменения данных пользователя"
-        });
+        next(
+          new NotFoundError("Вы не можете изменять данные друго пользователя")
+        );
       }
     })
     .catch(err => {
       if (err.name === "ValidationError") {
-        res.status(400).send({ message: "Данные невалидны", error: err });
+        next(new BadRequestError(`${err}`));
       } else {
-        res.status(500).send({ message: "Ошибка на сервере", error: err });
+        next(err);
       }
     });
 };
 // обновляет аватар
-const updateUserAvatar = (req, res) => {
+const updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   if (!ObjectId.isValid(req.params.id)) {
-    res.status(400).send({ message: "Невалидный id" });
-    return;
+    next(new BadRequestError("Невалидный id"));
   }
   User.findByIdAndUpdate(
     req.params.id,
@@ -131,16 +123,16 @@ const updateUserAvatar = (req, res) => {
       if (req.user._id === req.params.id) {
         res.status(200).send({ data: user });
       } else {
-        res.status(404).send({
-          message: "Недостаточно прав для изменения аватара пользователя"
-        });
+        next(
+          new NotFoundError("Вы не можете изменять аватар друго пользователя")
+        );
       }
     })
     .catch(err => {
       if (err.name === "ValidationError") {
-        res.status(400).send({ message: "Данные невалидны", error: err });
+        next(new BadRequestError(`${err}`));
       } else {
-        res.status(500).send({ message: "Ошибка на сервере", error: err });
+        next(err);
       }
     });
 };
