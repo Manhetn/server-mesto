@@ -2,10 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const { errors } = require("celebrate");
 
 const users = require("./routes/users");
 const cards = require("./routes/cards");
-const errors = require("./routes/errors");
+const invalidPathError = require("./routes/invalidPathError");
 const errorHandler = require("./middlewares/errorHandler");
 
 const { PORT = 3000 } = process.env;
@@ -22,9 +23,10 @@ app.use(cookieParser());
 
 app.use(users);
 app.use(cards);
-app.use(errorHandler);
 
-app.use(errors);
+app.use(errors());
+app.use(errorHandler);
+app.use(invalidPathError);
 
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает

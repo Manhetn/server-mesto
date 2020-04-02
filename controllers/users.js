@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const User = require("../models/user");
@@ -8,8 +7,6 @@ const NotFoundError = require("../errors/notFoundError"); // 404
 const UnauthorizedError = require("../errors/unauthorizedError"); // 401
 
 const { createToken } = require("../middlewares/token");
-
-const { ObjectId } = mongoose.Types;
 
 // login
 const login = (req, res, next) => {
@@ -61,9 +58,6 @@ const readUsers = (req, res, next) => {
 };
 // возвращает пользователя по _id
 const readUser = (req, res, next) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    next(new BadRequestError("Невалидный id"));
-  }
   User.findById(req.params.id)
     .then(user => {
       if (user) {
@@ -77,9 +71,6 @@ const readUser = (req, res, next) => {
 // обновляет профиль
 const updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
-  if (!ObjectId.isValid(req.params.id)) {
-    next(new BadRequestError("Невалидный id"));
-  }
   User.findByIdAndUpdate(
     req.params.id,
     { name, about },
@@ -108,9 +99,6 @@ const updateUserInfo = (req, res, next) => {
 // обновляет аватар
 const updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  if (!ObjectId.isValid(req.params.id)) {
-    next(new BadRequestError("Невалидный id"));
-  }
   User.findByIdAndUpdate(
     req.params.id,
     { avatar },

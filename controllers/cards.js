@@ -1,11 +1,7 @@
-const mongoose = require("mongoose");
-
 const Card = require("../models/card");
 const BadRequestError = require("../errors/badRequestError"); // 400
 const ConflictError = require("../errors/conflictError"); // 409
 const NotFoundError = require("../errors/notFoundError"); // 404
-
-const { ObjectId } = mongoose.Types;
 
 // возвращает все карточки
 const readCards = (req, res, next) => {
@@ -28,9 +24,6 @@ const createCard = (req, res, next) => {
 };
 // удаляет карточку по идентификатору
 const deleteCard = (req, res, next) => {
-  if (!ObjectId.isValid(req.params.id)) {
-    next(new BadRequestError("Невалидный id"));
-  }
   Card.findById(req.params.id)
     .then(card => {
       if (!card) {
