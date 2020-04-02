@@ -35,8 +35,10 @@
     "cookie-parser": "^1.4.5",
     "escape-html": "^1.0.3",
     "express": "^4.17.1",
+    "express-winston": "^4.0.3",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.3",
-    "validator": "^13.0.0"
+    "validator": "^13.0.0",
+    "winston": "^3.2.1"
   }
 }

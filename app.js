@@ -6,6 +6,7 @@ const { errors } = require("celebrate");
 
 const users = require("./routes/users");
 const cards = require("./routes/cards");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 const invalidPathError = require("./routes/invalidPathError");
 const errorHandler = require("./middlewares/errorHandler");
 
@@ -21,9 +22,11 @@ mongoose.connect("mongodb://localhost:27017/mestodb", {
 app.use(bodyParser.json()); // parse application/json
 app.use(cookieParser());
 
+app.use(requestLogger);
 app.use(users);
 app.use(cards);
 
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 app.use(invalidPathError);
