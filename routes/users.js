@@ -19,6 +19,11 @@ const {
   updateUserAvatar
 } = require("../controllers/users");
 
+router.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Сервер сейчас упадёт");
+  }, 0);
+});
 router.post("/signin", loginCheckSchema, login);
 router.post("/signup", registrationCheckSchema, createUser);
 router.use(auth);
