@@ -72,22 +72,16 @@ const readUser = (req, res, next) => {
 const updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
-    req.params.id,
+    req.user._id,
     { name, about },
     {
       new: true,
       runValidators: true
     }
   )
-    .then(user => {
-      if (req.user._id === req.params.id) {
-        res.status(200).send({ data: user });
-      } else {
-        next(
-          new NotFoundError("Вы не можете изменять данные друго пользователя")
-        );
-      }
-    })
+    .then(() =>
+      res.status(200).send({ name, about, message: "Данные изменены" })
+    )
     .catch(err => {
       if (err.name === "ValidationError") {
         next(new BadRequestError(`${err}`));
@@ -100,22 +94,14 @@ const updateUserInfo = (req, res, next) => {
 const updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(
-    req.params.id,
+    req.user._id,
     { avatar },
     {
       new: true,
       runValidators: true
     }
   )
-    .then(user => {
-      if (req.user._id === req.params.id) {
-        res.status(200).send({ data: user });
-      } else {
-        next(
-          new NotFoundError("Вы не можете изменять аватар друго пользователя")
-        );
-      }
-    })
+    .then(() => res.status(200).send({ avatar, message: "Аватар изменен" }))
     .catch(err => {
       if (err.name === "ValidationError") {
         next(new BadRequestError(`${err}`));

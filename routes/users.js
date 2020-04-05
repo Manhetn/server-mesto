@@ -29,19 +29,7 @@ router.post("/signup", registrationCheckSchema, createUser);
 router.use(auth);
 router.get("/users", readUsers);
 router.get("/users/:id", idCheckSchema, idVerification, readUser);
-router.patch(
-  "/users/:id",
-  idCheckSchema,
-  userInfoCheckSchema,
-  idVerification,
-  updateUserInfo
-);
-router.patch(
-  "/users/:id/avatar",
-  idCheckSchema,
-  userAvatarCheckSchema,
-  idVerification,
-  updateUserAvatar
-);
+router.patch("/users/me", userInfoCheckSchema, updateUserInfo);
+router.patch("/users/me/avatar", userAvatarCheckSchema, updateUserAvatar);
 
 module.exports = router;
