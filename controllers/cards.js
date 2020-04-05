@@ -45,7 +45,17 @@ const addLikeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true }
   )
-    .then(card => res.send(card))
+    .then(card => {
+      if (card) {
+        res.status(200).send(card);
+      } else {
+        next(
+          new NotFoundError(
+            "Вы пытаетсь поставить лайк несуществующей карточке"
+          )
+        );
+      }
+    })
     .catch(err => next(err));
 };
 const deleteLikeCard = (req, res, next) => {
@@ -54,7 +64,15 @@ const deleteLikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true }
   )
-    .then(card => res.send(card))
+    .then(card => {
+      if (card) {
+        res.status(200).send(card);
+      } else {
+        next(
+          new NotFoundError("Вы пытаетсь удалить лайк несуществующей карточке")
+        );
+      }
+    })
     .catch(err => next(err));
 };
 
