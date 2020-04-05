@@ -1,7 +1,7 @@
 const Card = require("../models/card");
 const BadRequestError = require("../errors/badRequestError"); // 400
-const ConflictError = require("../errors/conflictError"); // 409
 const NotFoundError = require("../errors/notFoundError"); // 404
+const ForbiddenError = require("../errors/forbiddenError"); // 403
 
 // возвращает все карточки
 const readCards = (req, res, next) => {
@@ -29,10 +29,12 @@ const deleteCard = (req, res, next) => {
       if (!card) {
         next(new NotFoundError("Такой карточки не существует"));
       } else if (req.user._id !== card.owner.toString()) {
-        next(new ConflictError("Нельзя удалить карточку другого пользователя"));
+        next(
+          new ForbiddenError("Нельзя удалить карточку другого пользователя")
+        );
       } else {
         Card.findByIdAndRemove(req.params.id)
-          .then(() => res.send({ message: "Карточка удалена" }))
+          .then(() => res.status(200).send({ message: "Карточка удалена" }))
           .catch(err => next(err));
       }
     })

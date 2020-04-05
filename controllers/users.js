@@ -79,7 +79,9 @@ const updateUserInfo = (req, res, next) => {
       runValidators: true
     }
   )
-    .then(() => res.send({ name, about, message: "Данные изменены" }))
+    .then(() =>
+      res.status(200).send({ name, about, message: "Данные изменены" })
+    )
     .catch(err => {
       if (err.name === "ValidationError") {
         next(new BadRequestError(`${err}`));
@@ -99,7 +101,7 @@ const updateUserAvatar = (req, res, next) => {
       runValidators: true
     }
   )
-    .then(() => res.send({ avatar, message: "Аватар изменен" }))
+    .then(() => res.status(200).send({ avatar, message: "Аватар изменен" }))
     .catch(err => {
       if (err.name === "ValidationError") {
         next(new BadRequestError(`${err}`));
