@@ -73,7 +73,7 @@ git clone https://github.com/Manhetn/backend-mesto.git
 Установите зависимости:
 
 ```
-npm init
+npm install
 ```
 
 ## Для локальной разработки с поднятием сервера используйте:
